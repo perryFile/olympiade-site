@@ -193,7 +193,7 @@ function HomePage({ data, sourceLabel, isSyncing, syncError }) {
   )
 }
 
-function AdminPage({ data, saveData, sourceLabel, isSyncing, syncError }) {
+function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncError }) {
   const [participantForm, setParticipantForm] = useState({
     id: '',
     name: '',
@@ -375,6 +375,12 @@ function AdminPage({ data, saveData, sourceLabel, isSyncing, syncError }) {
         <p>
           Datasource: <strong>{sourceLabel}</strong> · {isSyncing ? 'Gemmer...' : 'Klar'}
         </p>
+        {!isLiveMode ? (
+          <p className="status-card__warn">
+            Live mode er ikke aktiv. Aendringer her deles ikke med andre, foer VITE_FIREBASE secrets er sat i GitHub og
+            siden er deployet igen.
+          </p>
+        ) : null}
         <p className="muted">Brug dette panel til live-opdateringer under eventet.</p>
         <Link to="/" className="link-button">
           Til offentlig side
@@ -640,7 +646,7 @@ function AdminPage({ data, saveData, sourceLabel, isSyncing, syncError }) {
 }
 
 function App() {
-  const { data, saveData, sourceLabel, isSyncing, syncError } = useTournamentData()
+  const { data, saveData, sourceLabel, isLiveMode, isSyncing, syncError } = useTournamentData()
 
   return (
     <Routes>
@@ -655,6 +661,7 @@ function App() {
             data={data}
             saveData={saveData}
             sourceLabel={sourceLabel}
+            isLiveMode={isLiveMode}
             isSyncing={isSyncing}
             syncError={syncError}
           />

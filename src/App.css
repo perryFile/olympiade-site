@@ -90,6 +90,11 @@
   font-weight: 700;
 }
 
+.status-card__warn {
+  color: #9a4f00;
+  font-weight: 700;
+}
+
 .panel {
   background: var(--paper);
   border: 2px solid var(--line);

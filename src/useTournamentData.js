@@ -4,6 +4,10 @@ import { firebaseEnabled, saveRemoteData, subscribeRemoteData } from './firebase
 
 const STORAGE_KEY = 'olympiade-data-v1'
 
+function isLocalHost(hostname) {
+  return hostname === 'localhost' || hostname === '127.0.0.1'
+}
+
 function mergeWithDefaults(data) {
   const incoming = data || {}
   return {
@@ -16,8 +20,16 @@ function mergeWithDefaults(data) {
 }
 
 export function useTournamentData() {
+  const remoteMode = firebaseEnabled()
+  const canUseLocalStorageFallback =
+    !remoteMode && typeof window !== 'undefined' && isLocalHost(window.location.hostname)
+
   const [data, setData] = useState(() => {
-    if (firebaseEnabled()) {
+    if (remoteMode) {
+      return defaultData
+    }
+
+    if (!canUseLocalStorageFallback) {
       return defaultData
     }
 
@@ -30,8 +42,6 @@ export function useTournamentData() {
   })
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncError, setSyncError] = useState('')
-
-  const remoteMode = firebaseEnabled()
 
   useEffect(() => {
     if (remoteMode) {
@@ -55,11 +65,7 @@ export function useTournamentData() {
 
   const saveData = useCallback(
     async (updater) => {
-      let nextData
-      setData((prev) => {
-        nextData = typeof updater === 'function' ? updater(prev) : updater
-        return nextData
-      })
+      const nextData = typeof updater === 'function' ? updater(data) : updater
 
       try {
         setIsSyncing(true)
@@ -67,24 +73,32 @@ export function useTournamentData() {
 
         if (remoteMode) {
           await saveRemoteData(nextData)
-        } else {
+        } else if (canUseLocalStorageFallback) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(nextData))
+        } else {
+          throw new Error('Live-data er ikke aktiv. Udfyld VITE_FIREBASE_* i GitHub Secrets og deploy igen.')
         }
+
+        setData(nextData)
       } catch (error) {
         setSyncError(error.message || 'Kunne ikke gemme data')
       } finally {
         setIsSyncing(false)
       }
     },
-    [remoteMode],
+    [data, remoteMode, canUseLocalStorageFallback],
   )
 
-  const sourceLabel = useMemo(() => (remoteMode ? 'Firebase (live)' : 'Lokal browserdata'), [remoteMode])
+  const sourceLabel = useMemo(
+    () => (remoteMode ? 'Firebase (live)' : 'Lokal browserdata (kun denne enhed)'),
+    [remoteMode],
+  )
 
   return {
     data,
     saveData,
     sourceLabel,
+    isLiveMode: remoteMode,
     isSyncing,
     syncError,
   }
