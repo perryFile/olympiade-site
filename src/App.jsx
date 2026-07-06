@@ -5,6 +5,7 @@ import { uploadRemoteImage } from './firebaseClient'
 import { useTournamentData } from './useTournamentData'
 
 const ADMIN_PATH = (import.meta.env.VITE_ADMIN_PATH || '/baglokale-olympiade').replace(/^\//, '')
+const ASSET_BASE = import.meta.env.BASE_URL
 
 function createId(prefix) {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -56,10 +57,10 @@ function HomePage({ data, sourceLabel, isSyncing, syncError }) {
         <div className="hero__bg-shape" aria-hidden="true" />
         <img
           className="hero__logo"
-          src="/logo-olympiade.svg"
+          src={`${ASSET_BASE}logo-olympiade.svg`}
           alt="ØLympiade logo"
           onError={(event) => {
-            event.currentTarget.src = '/favicon.svg'
+            event.currentTarget.src = `${ASSET_BASE}favicon.svg`
           }}
         />
         <p className="eyebrow">Turneringsdag</p>
