@@ -16,14 +16,7 @@ Denne guide goer jeres hjemmeside live paa tvaers af enheder.
 3. Start i test mode (hurtigst)
 4. Indlaes reglerne fra `firebase/database.rules.json`
 
-## 3) Aktivér Storage
-
-1. Vaelg Storage
-2. Opret bucket
-3. Start i test mode (hurtigst)
-4. Indlaes reglerne fra `firebase/storage.rules`
-
-## 4) Udfyld lokal env
+## 3) Udfyld lokal env
 
 1. Koer:
 ```bash
@@ -32,7 +25,7 @@ cp .env.example .env
 2. Udfyld alle `VITE_FIREBASE_*` i `.env`
 3. (Valgfrit) saet en ny admin sti i `VITE_ADMIN_PATH`
 
-## 5) Test lokalt
+## 4) Test lokalt
 
 ```bash
 npm run dev -- --host
@@ -42,10 +35,9 @@ Tjek:
 1. Offentlig side loader
 2. Admin side loader paa din sti (fx `/baglokale-olympiade`)
 3. Opret hold/deltager
-4. Upload hold/deltager billeder
-5. Opdater score og se live leaderboard
+4. Opdater score og se live leaderboard
 
-## 6) GitHub setup (for produktion)
+## 5) GitHub setup (for produktion)
 
 I GitHub repo:
 1. Settings -> Secrets and variables -> Actions -> Secrets
@@ -55,7 +47,7 @@ I GitHub repo:
 
 Workflow deployer automatisk via `.github/workflows/deploy.yml`.
 
-## 7) Sikkerhed (vigtigt)
+## 6) Sikkerhed (vigtigt)
 
 I har valgt skjult admin-link uden login.
 Det er nemt men ikke robust sikkerhed.

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
-import { uploadRemoteImage } from './firebaseClient'
 import { useTournamentData } from './useTournamentData'
 
 const ADMIN_PATH = (import.meta.env.VITE_ADMIN_PATH || '/baglokale-olympiade').replace(/^\//, '')
@@ -121,11 +120,6 @@ function HomePage({ data, sourceLabel, isSyncing, syncError }) {
           <div className="grid cards-3">
             {teams.map(({ team, members, total }) => (
               <article className="card" key={team.id}>
-                <img
-                  className="card__image"
-                  src={team.imageUrl || '/favicon.svg'}
-                  alt={`Holdbillede for ${team.name}`}
-                />
                 <h3>{team.name}</h3>
                 <p>Holdpoint: {total}</p>
                 <p className="muted">Medlemmer: {members.length}</p>
@@ -146,11 +140,6 @@ function HomePage({ data, sourceLabel, isSyncing, syncError }) {
               const team = data.teams.find((candidate) => candidate.id === participant.teamId)
               return (
                 <article className="card" key={participant.id}>
-                  <img
-                    className="card__image"
-                    src={participant.imageUrl || '/favicon.svg'}
-                    alt={`Profilbillede af ${participant.name}`}
-                  />
                   <h3>{participant.name}</h3>
                   <p>{team?.name || 'Ikke på hold endnu'}</p>
                 </article>
@@ -198,111 +187,65 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
     id: '',
     name: '',
     teamId: '',
-    imageUrl: '',
-    imageFile: null,
   })
-  const [teamForm, setTeamForm] = useState({ id: '', name: '', imageUrl: '', imageFile: null })
+  const [teamForm, setTeamForm] = useState({ id: '', name: '' })
   const [activityForm, setActivityForm] = useState({ id: '', name: '', description: '', location: '' })
   const [scheduleForm, setScheduleForm] = useState({ id: '', start: '', end: '', title: '', location: '' })
   const [saveMessage, setSaveMessage] = useState('')
 
-  function mapImageUploadError(error) {
-    const code = error?.code || ''
-
-    if (code === 'storage/unauthorized') {
-      return 'Upload blev afvist af Firebase Storage regler.'
-    }
-    if (code === 'storage/quota-exceeded') {
-      return 'Storage kvote er overskredet.'
-    }
-    if (code === 'storage/object-not-found' || code === 'storage/bucket-not-found') {
-      return 'Storage bucket blev ikke fundet. Tjek Firebase Storage opsaetning.'
-    }
-    if (code === 'storage/retry-limit-exceeded') {
-      return 'Upload timeout. Proev igen med bedre forbindelse.'
-    }
-    if (code === 'storage/invalid-format') {
-      return 'Filformatet er ikke understoettet.'
-    }
-    if (code === 'storage/invalid-checksum') {
-      return 'Upload fejlede pga. checksum fejl. Proev igen.'
-    }
-
-    return error?.message || 'Upload af billede fejlede.'
-  }
-
-  async function resolveImageUrl(file, existingUrl, folder) {
-    if (!file) {
-      return existingUrl
-    }
-    return uploadRemoteImage(file, `${folder}/${Date.now()}-${file.name}`)
-  }
-
   async function saveParticipant(event) {
     event.preventDefault()
-    try {
-      const id = participantForm.id || createId('participant')
-      const imageUrl = await resolveImageUrl(participantForm.imageFile, participantForm.imageUrl, 'participants')
+    const id = participantForm.id || createId('participant')
 
-      await saveData((prev) => {
-        const nextParticipants = [...prev.participants]
-        const index = nextParticipants.findIndex((participant) => participant.id === id)
-        const record = {
-          id,
-          name: participantForm.name.trim(),
-          teamId: participantForm.teamId || '',
-          imageUrl,
-        }
-        if (index >= 0) {
-          nextParticipants[index] = record
-        } else {
-          nextParticipants.push(record)
-        }
+    await saveData((prev) => {
+      const nextParticipants = [...prev.participants]
+      const index = nextParticipants.findIndex((participant) => participant.id === id)
+      const record = {
+        id,
+        name: participantForm.name.trim(),
+        teamId: participantForm.teamId || '',
+      }
+      if (index >= 0) {
+        nextParticipants[index] = record
+      } else {
+        nextParticipants.push(record)
+      }
 
-        return {
-          ...prev,
-          participants: nextParticipants,
-        }
-      })
+      return {
+        ...prev,
+        participants: nextParticipants,
+      }
+    })
 
-      setParticipantForm({ id: '', name: '', teamId: '', imageUrl: '', imageFile: null })
-      setSaveMessage('Deltager gemt')
-    } catch (error) {
-      setSaveMessage(`Fejl ved billed-upload: ${mapImageUploadError(error)}`)
-    }
+    setParticipantForm({ id: '', name: '', teamId: '' })
+    setSaveMessage('Deltager gemt')
   }
 
   async function saveTeam(event) {
     event.preventDefault()
-    try {
-      const id = teamForm.id || createId('team')
-      const imageUrl = await resolveImageUrl(teamForm.imageFile, teamForm.imageUrl, 'teams')
+    const id = teamForm.id || createId('team')
 
-      await saveData((prev) => {
-        const nextTeams = [...prev.teams]
-        const index = nextTeams.findIndex((team) => team.id === id)
-        const record = {
-          id,
-          name: teamForm.name.trim(),
-          imageUrl,
-        }
-        if (index >= 0) {
-          nextTeams[index] = record
-        } else {
-          nextTeams.push(record)
-        }
+    await saveData((prev) => {
+      const nextTeams = [...prev.teams]
+      const index = nextTeams.findIndex((team) => team.id === id)
+      const record = {
+        id,
+        name: teamForm.name.trim(),
+      }
+      if (index >= 0) {
+        nextTeams[index] = record
+      } else {
+        nextTeams.push(record)
+      }
 
-        return {
-          ...prev,
-          teams: nextTeams,
-        }
-      })
+      return {
+        ...prev,
+        teams: nextTeams,
+      }
+    })
 
-      setTeamForm({ id: '', name: '', imageUrl: '', imageFile: null })
-      setSaveMessage('Hold gemt')
-    } catch (error) {
-      setSaveMessage(`Fejl ved billed-upload: ${mapImageUploadError(error)}`)
-    }
+    setTeamForm({ id: '', name: '' })
+    setSaveMessage('Hold gemt')
   }
 
   async function saveActivity(event) {
@@ -419,9 +362,7 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
           Til offentlig side
         </Link>
         {syncError ? <p className="status-card__error">Fejl: {syncError}</p> : null}
-        {saveMessage ? (
-          <p className={saveMessage.startsWith('Fejl') ? 'status-card__error' : 'status-card__ok'}>{saveMessage}</p>
-        ) : null}
+        {saveMessage ? <p className="status-card__ok">{saveMessage}</p> : null}
       </header>
 
       <main className="content admin-grid">
@@ -450,23 +391,6 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
                 ))}
               </select>
             </label>
-            <label>
-              Billede URL (valgfri)
-              <input
-                value={participantForm.imageUrl}
-                onChange={(event) => setParticipantForm((prev) => ({ ...prev, imageUrl: event.target.value }))}
-              />
-            </label>
-            <label>
-              Upload billede (valgfri)
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(event) =>
-                  setParticipantForm((prev) => ({ ...prev, imageFile: event.target.files?.[0] || null }))
-                }
-              />
-            </label>
             <button type="submit">Gem deltager</button>
           </form>
           <ul className="admin-list">
@@ -481,8 +405,6 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
                         id: participant.id,
                         name: participant.name,
                         teamId: participant.teamId || '',
-                        imageUrl: participant.imageUrl || '',
-                        imageFile: null,
                       })
                     }
                   >
@@ -508,21 +430,6 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
                 onChange={(event) => setTeamForm((prev) => ({ ...prev, name: event.target.value }))}
               />
             </label>
-            <label>
-              Holdbillede URL (valgfri)
-              <input
-                value={teamForm.imageUrl}
-                onChange={(event) => setTeamForm((prev) => ({ ...prev, imageUrl: event.target.value }))}
-              />
-            </label>
-            <label>
-              Upload holdbillede (valgfri)
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(event) => setTeamForm((prev) => ({ ...prev, imageFile: event.target.files?.[0] || null }))}
-              />
-            </label>
             <button type="submit">Gem hold</button>
           </form>
           <ul className="admin-list">
@@ -532,7 +439,7 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
                 <div className="admin-actions">
                   <button
                     type="button"
-                    onClick={() => setTeamForm({ id: team.id, name: team.name, imageUrl: team.imageUrl || '', imageFile: null })}
+                    onClick={() => setTeamForm({ id: team.id, name: team.name })}
                   >
                     Rediger
                   </button>

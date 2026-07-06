@@ -4,31 +4,26 @@ export const defaultData = {
       id: 'participant-emma',
       name: 'Emma',
       teamId: 'team-humlehelte',
-      imageUrl: '',
     },
     {
       id: 'participant-mikkel',
       name: 'Mikkel',
       teamId: 'team-skumbrigaden',
-      imageUrl: '',
     },
     {
       id: 'participant-sofie',
       name: 'Sofie',
       teamId: 'team-humlehelte',
-      imageUrl: '',
     },
   ],
   teams: [
     {
       id: 'team-humlehelte',
       name: 'Humleheltene',
-      imageUrl: '',
     },
     {
       id: 'team-skumbrigaden',
       name: 'Skumbrigaden',
-      imageUrl: '',
     },
   ],
   activities: [

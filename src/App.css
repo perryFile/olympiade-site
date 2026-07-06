@@ -132,15 +132,6 @@
   font-size: 24px;
 }
 
-.card__image {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: #faf7f0;
-}
-
 .muted {
   color: var(--muted);
 }

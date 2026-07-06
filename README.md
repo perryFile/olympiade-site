@@ -2,7 +2,7 @@
 
 Dansk event-site med:
 - Deltagere
-- Hold med holdbilleder
+- Hold
 - Leaderboard
 - Aktiviteter
 - Tidsplan
@@ -55,8 +55,7 @@ Detaljeret guide findes i:
 
 Klar til brug:
 - `firebase/database.rules.json`
-- `firebase/storage.rules`
-- `firebase.json`
+- `firebase.json` (database)
 
 Hvis du vil deploye regler via Firebase CLI:
 
@@ -65,7 +64,7 @@ npm install -g firebase-tools
 firebase login
 cp .firebaserc.example .firebaserc
 # ret projekt-id i .firebaserc
-firebase deploy --only database,storage
+firebase deploy --only database
 ```
 
 ## GitHub Pages deploy
@@ -84,7 +83,6 @@ Detaljeret secrets-guide findes i:
    - `VITE_FIREBASE_AUTH_DOMAIN`
    - `VITE_FIREBASE_DATABASE_URL`
    - `VITE_FIREBASE_PROJECT_ID`
-   - `VITE_FIREBASE_STORAGE_BUCKET`
    - `VITE_FIREBASE_MESSAGING_SENDER_ID`
    - `VITE_FIREBASE_APP_ID`
 3. Push til `main`
