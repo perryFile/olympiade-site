@@ -1,0 +1,281 @@
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(160deg, #fffef9 0%, #fff4dc 80%);
+  padding: 24px;
+}
+
+.hero__bg-shape {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -120px;
+  right: -80px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(170, 90, 16, 0.3) 0%, rgba(170, 90, 16, 0) 70%);
+}
+
+.hero__logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: white;
+  border: 2px solid var(--line);
+}
+
+.hero h1 {
+  margin: 8px 0;
+  font-size: 52px;
+  line-height: 1;
+}
+
+.hero__text {
+  max-width: 66ch;
+  margin: 0;
+}
+
+.eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 16px 0 0;
+  color: var(--brand-dark);
+}
+
+.quick-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.quick-nav a,
+.link-button {
+  text-decoration: none;
+  background: var(--brand-soft);
+  border: 1px solid #e8cf9a;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.content {
+  margin-top: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.status-card {
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.status-card__error {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.status-card__ok {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.panel {
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 35px;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.cards-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cards-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  background: white;
+}
+
+.card h3 {
+  margin: 12px 0 4px;
+  font-size: 24px;
+}
+
+.card__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #faf7f0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  background: white;
+}
+
+.timeline__time {
+  font-weight: 700;
+}
+
+.page--admin {
+  padding-top: 32px;
+}
+
+.admin-head {
+  margin-bottom: 16px;
+}
+
+.admin-head h1 {
+  margin: 0;
+  font-size: 46px;
+}
+
+.admin-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.form-stack label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.form-stack input,
+.form-stack select,
+.form-stack textarea,
+.admin-list input {
+  width: 100%;
+  border: 1px solid #d9cdb8;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.form-stack button,
+.admin-actions button {
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: var(--brand);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-actions .danger {
+  background: var(--danger);
+}
+
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.admin-list--scores li {
+  grid-template-columns: 1fr 120px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 6px;
+}
+
+@media (max-width: 900px) {
+  .cards-2,
+  .cards-3,
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline li {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+  }
+}
