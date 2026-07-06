@@ -57,7 +57,7 @@ function HomePage({ data, sourceLabel, isSyncing, syncError }) {
         <div className="hero__bg-shape" aria-hidden="true" />
         <img
           className="hero__logo"
-          src={`${ASSET_BASE}logo-olympiade.svg`}
+          src={`${ASSET_BASE}logo.png`}
           alt="ØLympiade logo"
           onError={(event) => {
             event.currentTarget.src = `${ASSET_BASE}favicon.svg`
