@@ -206,6 +206,31 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
   const [scheduleForm, setScheduleForm] = useState({ id: '', start: '', end: '', title: '', location: '' })
   const [saveMessage, setSaveMessage] = useState('')
 
+  function mapImageUploadError(error) {
+    const code = error?.code || ''
+
+    if (code === 'storage/unauthorized') {
+      return 'Upload blev afvist af Firebase Storage regler.'
+    }
+    if (code === 'storage/quota-exceeded') {
+      return 'Storage kvote er overskredet.'
+    }
+    if (code === 'storage/object-not-found' || code === 'storage/bucket-not-found') {
+      return 'Storage bucket blev ikke fundet. Tjek Firebase Storage opsaetning.'
+    }
+    if (code === 'storage/retry-limit-exceeded') {
+      return 'Upload timeout. Proev igen med bedre forbindelse.'
+    }
+    if (code === 'storage/invalid-format') {
+      return 'Filformatet er ikke understoettet.'
+    }
+    if (code === 'storage/invalid-checksum') {
+      return 'Upload fejlede pga. checksum fejl. Proev igen.'
+    }
+
+    return error?.message || 'Upload af billede fejlede.'
+  }
+
   async function resolveImageUrl(file, existingUrl, folder) {
     if (!file) {
       return existingUrl
@@ -215,61 +240,69 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
 
   async function saveParticipant(event) {
     event.preventDefault()
-    const id = participantForm.id || createId('participant')
-    const imageUrl = await resolveImageUrl(participantForm.imageFile, participantForm.imageUrl, 'participants')
+    try {
+      const id = participantForm.id || createId('participant')
+      const imageUrl = await resolveImageUrl(participantForm.imageFile, participantForm.imageUrl, 'participants')
 
-    await saveData((prev) => {
-      const nextParticipants = [...prev.participants]
-      const index = nextParticipants.findIndex((participant) => participant.id === id)
-      const record = {
-        id,
-        name: participantForm.name.trim(),
-        teamId: participantForm.teamId || '',
-        imageUrl,
-      }
-      if (index >= 0) {
-        nextParticipants[index] = record
-      } else {
-        nextParticipants.push(record)
-      }
+      await saveData((prev) => {
+        const nextParticipants = [...prev.participants]
+        const index = nextParticipants.findIndex((participant) => participant.id === id)
+        const record = {
+          id,
+          name: participantForm.name.trim(),
+          teamId: participantForm.teamId || '',
+          imageUrl,
+        }
+        if (index >= 0) {
+          nextParticipants[index] = record
+        } else {
+          nextParticipants.push(record)
+        }
 
-      return {
-        ...prev,
-        participants: nextParticipants,
-      }
-    })
+        return {
+          ...prev,
+          participants: nextParticipants,
+        }
+      })
 
-    setParticipantForm({ id: '', name: '', teamId: '', imageUrl: '', imageFile: null })
-    setSaveMessage('Deltager gemt')
+      setParticipantForm({ id: '', name: '', teamId: '', imageUrl: '', imageFile: null })
+      setSaveMessage('Deltager gemt')
+    } catch (error) {
+      setSaveMessage(`Fejl ved billed-upload: ${mapImageUploadError(error)}`)
+    }
   }
 
   async function saveTeam(event) {
     event.preventDefault()
-    const id = teamForm.id || createId('team')
-    const imageUrl = await resolveImageUrl(teamForm.imageFile, teamForm.imageUrl, 'teams')
+    try {
+      const id = teamForm.id || createId('team')
+      const imageUrl = await resolveImageUrl(teamForm.imageFile, teamForm.imageUrl, 'teams')
 
-    await saveData((prev) => {
-      const nextTeams = [...prev.teams]
-      const index = nextTeams.findIndex((team) => team.id === id)
-      const record = {
-        id,
-        name: teamForm.name.trim(),
-        imageUrl,
-      }
-      if (index >= 0) {
-        nextTeams[index] = record
-      } else {
-        nextTeams.push(record)
-      }
+      await saveData((prev) => {
+        const nextTeams = [...prev.teams]
+        const index = nextTeams.findIndex((team) => team.id === id)
+        const record = {
+          id,
+          name: teamForm.name.trim(),
+          imageUrl,
+        }
+        if (index >= 0) {
+          nextTeams[index] = record
+        } else {
+          nextTeams.push(record)
+        }
 
-      return {
-        ...prev,
-        teams: nextTeams,
-      }
-    })
+        return {
+          ...prev,
+          teams: nextTeams,
+        }
+      })
 
-    setTeamForm({ id: '', name: '', imageUrl: '', imageFile: null })
-    setSaveMessage('Hold gemt')
+      setTeamForm({ id: '', name: '', imageUrl: '', imageFile: null })
+      setSaveMessage('Hold gemt')
+    } catch (error) {
+      setSaveMessage(`Fejl ved billed-upload: ${mapImageUploadError(error)}`)
+    }
   }
 
   async function saveActivity(event) {
@@ -386,7 +419,9 @@ function AdminPage({ data, saveData, sourceLabel, isLiveMode, isSyncing, syncErr
           Til offentlig side
         </Link>
         {syncError ? <p className="status-card__error">Fejl: {syncError}</p> : null}
-        {saveMessage ? <p className="status-card__ok">{saveMessage}</p> : null}
+        {saveMessage ? (
+          <p className={saveMessage.startsWith('Fejl') ? 'status-card__error' : 'status-card__ok'}>{saveMessage}</p>
+        ) : null}
       </header>
 
       <main className="content admin-grid">
